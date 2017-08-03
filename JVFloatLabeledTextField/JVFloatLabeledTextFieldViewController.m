@@ -59,10 +59,10 @@ const static CGFloat kJVFieldFloatingLabelFontSize = 11.0f;
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-    [self.view setTintColor:[UIColor blueColor]];
+    // [self.view setTintColor:[UIColor purpleColor]];
 #endif
     
-    UIColor *floatingLabelColor = [UIColor brownColor];
+    UIColor *floatingLabelColor = [UIColor purpleColor];
     
     JVFloatLabeledTextField *titleField = [[JVFloatLabeledTextField alloc] initWithFrame:CGRectZero];
     titleField.font = [UIFont systemFontOfSize:kJVFieldFontSize];
@@ -129,6 +129,18 @@ const static CGFloat kJVFieldFloatingLabelFontSize = 11.0f;
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:priceField attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:locationField attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0.0]];
 
     [titleField becomeFirstResponder];
+    titleField.text = @"1";
+    
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0/*延迟执行时间*/ * NSEC_PER_SEC));
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+        [titleField setErrorMessage:@"owo"];
+    });
+    
+    dispatch_time_t delayTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0/*延迟执行时间*/ * NSEC_PER_SEC));
+    dispatch_after(delayTime2, dispatch_get_main_queue(), ^{
+        titleField.text = @"";
+    });
+
 }
 
 - (void)didReceiveMemoryWarning

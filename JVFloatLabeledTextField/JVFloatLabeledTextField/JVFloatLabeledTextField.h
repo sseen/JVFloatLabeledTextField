@@ -43,6 +43,7 @@
 IB_DESIGNABLE
 @interface JVFloatLabeledTextField : UITextField
 
+
 /**
  * Read-only access to the floating label.
  */
@@ -148,5 +149,7 @@ IB_DESIGNABLE
  *  @param floatingTitle The string to be shown above the text field once it has been populated with text by the user.
  */
 - (void)setAttributedPlaceholder:(NSAttributedString *)attributedPlaceholder floatingTitle:(NSString *)floatingTitle;
+
+- (void)setErrorMessage:(NSString *)msg ;
 
 @end

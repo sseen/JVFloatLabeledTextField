@@ -34,6 +34,11 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 @implementation JVFloatLabeledTextField
 {
     BOOL _isFloatingLabelFontDefault;
+    
+    BOOL _isError;
+    
+    NSString *_errorMsg;
+    NSString *_floatTitle;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -127,7 +132,6 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     _isFloatingLabelFontDefault = floatingLabelFont == nil;
     [self invalidateIntrinsicContentSize];
 }
-
 - (void)showFloatingLabel:(BOOL)animated
 {
     void (^showBlock)() = ^{
@@ -198,7 +202,10 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
 
 - (void)setFloatingLabelText:(NSString *)text
 {
+
     _floatingLabel.text = text;
+
+    
     [self setNeedsLayout];
 }
 
@@ -359,6 +366,10 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     
     [self setLabelOriginForTextAlignment];
     
+    if (_floatTitle) {
+        _floatingLabel.text = _floatTitle;
+    }
+    
     CGSize floatingLabelSize = [_floatingLabel sizeThatFits:_floatingLabel.superview.bounds.size];
     
     _floatingLabel.frame = CGRectMake(_floatingLabel.frame.origin.x,
@@ -369,12 +380,44 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     BOOL firstResponder = self.isFirstResponder;
     _floatingLabel.textColor = (firstResponder && self.text && self.text.length > 0 ?
                                 self.labelActiveColor : self.floatingLabelTextColor);
-    if ((!self.text || 0 == [self.text length]) && !self.alwaysShowFloatingLabel) {
-        [self hideFloatingLabel:firstResponder];
+    
+    
+        if ((!self.text || 0 == [self.text length]) && !self.alwaysShowFloatingLabel) {
+            [self hideFloatingLabel:firstResponder];
+        }
+        else {
+            [self showFloatingLabel:firstResponder];
+        }
+    
+    
+}
+
+- (void)setErrorMessage:(NSString *)msg  {
+    BOOL animated = YES;
+    _floatTitle =  self.placeholder;
+    _floatingLabel.text = msg;
+    _errorMsg = msg;
+    _isError = YES;
+    
+    void (^showBlock)() = ^{
+        _floatingLabel.alpha = 1.0f;
+        _floatingLabel.frame = CGRectMake(_floatingLabel.frame.origin.x,
+                                          _floatingLabelYPadding,
+                                          _floatingLabel.frame.size.width,
+                                          _floatingLabel.frame.size.height);
+    };
+    
+    if (animated || 0 != _animateEvenIfNotFirstResponder) {
+        [UIView animateWithDuration:_floatingLabelShowAnimationDuration
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
+                         animations:showBlock
+                         completion:nil];
     }
     else {
-        [self showFloatingLabel:firstResponder];
+        showBlock();
     }
+    
 }
 
 @end

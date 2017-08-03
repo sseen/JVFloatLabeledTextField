@@ -364,4 +364,32 @@ static CGFloat const kFloatingLabelHideAnimationDuration = 0.3f;
     }
 }
 
+- (void)setErrorMessage:(NSString *)msg  {
+    BOOL animated = YES;
+    
+    void (^showBlock)() = ^{
+        _floatingLabel.alpha = 1.0f;
+        CGFloat top = _floatingLabelYPadding;
+        if (0 != self.floatingLabelShouldLockToTop) {
+            top += self.contentOffset.y;
+        }
+        _floatingLabel.frame = CGRectMake(_floatingLabel.frame.origin.x,
+                                          top,
+                                          _floatingLabel.frame.size.width,
+                                          _floatingLabel.frame.size.height);
+    };
+    
+    if ((animated || 0 != _animateEvenIfNotFirstResponder)
+        && (0 == self.floatingLabelShouldLockToTop || _floatingLabel.alpha != 1.0f)) {
+        [UIView animateWithDuration:_floatingLabelShowAnimationDuration
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseOut
+                         animations:showBlock
+                         completion:nil];
+    }
+    else {
+        showBlock();
+    }
+}
+
 @end
